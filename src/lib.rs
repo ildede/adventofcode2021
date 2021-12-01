@@ -1,9 +1,9 @@
 use std::fs;
 
-pub fn run(filename: &String) {
+pub fn run(filename: String) {
     println!("Filename: {}", filename);
 
-    let contents = fs::read_to_string(filename)
+    let contents = fs::read_to_string(format!("input/{}", filename))
         .expect("Error reading file");
 
     let count = count_increasing(contents);

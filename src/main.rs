@@ -5,6 +5,8 @@ use adventofcode2021::run;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let filename = &args[1];
-    run(filename);
+    let day = &args[1];
+    let part = &args[2];
+
+    run(format!("day{}part{}", day, part));
 }

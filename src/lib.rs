@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::fs;
 
 pub struct Config {
@@ -35,14 +36,14 @@ impl Config {
     }
 }
 
-pub fn run(config: Config) {
+pub fn run(config: Config) -> Result<(), Box<dyn Error>>{
     println!("Running puzzle of day {} part {}", config.day, config.part);
 
-    let contents = fs::read_to_string(format!("input/day{}part{}", config.day, config.part))
-        .expect("Error reading file");
+    let contents = fs::read_to_string(format!("input/day{}part{}", config.day, config.part))?;
 
     let count = count_increasing(contents);
     println!("Count: {:?}", count);
+    Ok(())
 }
 
 fn count_increasing(contents: String) -> usize {

@@ -10,5 +10,5 @@ fn main() {
         process::exit(1);
     });
 
-    run(format!("day{:}part{:}", config.day, config.part));
+    run(config);
 }

@@ -35,10 +35,10 @@ impl Config {
     }
 }
 
-pub fn run(filename: String) {
-    println!("Filename: {}", filename);
+pub fn run(config: Config) {
+    println!("Running puzzle of day {} part {}", config.day, config.part);
 
-    let contents = fs::read_to_string(format!("input/{}", filename))
+    let contents = fs::read_to_string(format!("input/day{}part{}", config.day, config.part))
         .expect("Error reading file");
 
     let count = count_increasing(contents);

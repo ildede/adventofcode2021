@@ -41,7 +41,7 @@ impl Config {
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     println!("Running puzzle of day {} part {}", config.day, config.part);
 
-    let contents: String = fs::read_to_string(format!("input/day{}part{}", config.day, config.part))?;
+    let contents: String = fs::read_to_string(format!("input/day{}input", config.day))?;
 
     let result: String = match config.day {
         1 => day1::solve_puzzle(config.part, contents),

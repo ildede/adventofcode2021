@@ -3,6 +3,6 @@ My solutions for [adventofcode.com](https://adventofcode.com/2021) 2021 version
 
 ## Usage
 
-Run `cargo run` with day and part of the puzzle
+Execute `cargo test` to run all tests
 
-example `cargo run 1 2` will elaborate day 1 part two 
+Execute `cargo run` with day and part of the puzzle, for example `cargo run 1 2` will elaborate day 1 part two 

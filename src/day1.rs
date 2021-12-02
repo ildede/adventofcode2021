@@ -23,15 +23,22 @@ mod tests {
     use crate::day1::count_increasing;
 
     #[test]
+    fn test_puzzle_example() {
+        let contents = String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263");
+
+        assert_eq!(7, count_increasing(contents));
+    }
+
+    #[test]
     fn count_only_increasing() {
-        let contents = String::from("100\n101\n102\n");
+        let contents = String::from("100\n101\n102");
 
         assert_eq!(2, count_increasing(contents));
     }
 
     #[test]
     fn count_only_decreasing() {
-        let contents = String::from("100\n99\n50\n");
+        let contents = String::from("100\n99\n50");
 
         assert_eq!(0, count_increasing(contents));
     }

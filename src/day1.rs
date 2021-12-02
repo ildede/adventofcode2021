@@ -1,3 +1,9 @@
+pub fn solve_puzzle(part: u8, contents: String) -> String {
+    match part {
+        1 => count_increasing(contents).to_string(),
+        _ => panic!("invalid part")
+    }
+}
 
 pub fn count_increasing(contents: String) -> usize {
     let mut count: usize = 0;

@@ -3,6 +3,7 @@ use std::fs;
 
 mod day1;
 mod day2;
+mod day3;
 
 pub struct Config {
     pub day: u8,
@@ -47,6 +48,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let result: String = match config.day {
         1 => day1::solve_puzzle(config.part, contents),
         2 => day2::solve_puzzle(config.part, contents),
+        3 => day3::solve_puzzle(config.part, contents),
         _ => panic!("invalid day")
     };
     println!("Result: {}", result);

@@ -1,5 +1,7 @@
+use crate::utils::convert_to_vec;
+
 pub fn solve_puzzle(part: u8, contents: String) -> String {
-    let vec = convert_to_vec(contents);
+    let vec = convert_to_numbers(convert_to_vec(contents));
     match part {
         1 => count_increasing(vec).to_string(),
         2 => count_increasing(regroup_to_three_measurement(vec)).to_string(),
@@ -7,9 +9,9 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
     }
 }
 
-fn convert_to_vec(contents: String) -> Vec<usize> {
+fn convert_to_numbers(contents: Vec<String>) -> Vec<usize> {
     let mut vec = Vec::new();
-    for line in contents.lines() {
+    for line in contents {
         vec.push(line.parse::<usize>().unwrap());
     }
     vec
@@ -36,7 +38,7 @@ fn count_increasing(vec: Vec<usize>) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::day1::{convert_to_vec, count_increasing, regroup_to_three_measurement};
+    use crate::day1::{convert_to_numbers, count_increasing, regroup_to_three_measurement};
 
     #[test]
     fn test_puzzle_example_part_two() {
@@ -89,8 +91,8 @@ mod tests {
 
     #[test]
     fn conversion_from_string_to_vec() {
-        let contents = String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263");
+        let contents = vec![String::from("199"), String::from("200"), String::from("208"), String::from("210"), String::from("200"), String::from("207"), String::from("240"), String::from("269"), String::from("260"), String::from("263")];
 
-        assert_eq!(vec![199, 200, 208, 210, 200, 207, 240, 269, 260, 263], convert_to_vec(contents));
+        assert_eq!(vec![199, 200, 208, 210, 200, 207, 240, 269, 260, 263], convert_to_numbers(contents));
     }
 }

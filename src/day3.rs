@@ -1,3 +1,5 @@
+use crate::utils::convert_to_vec;
+
 pub fn solve_puzzle(part: u8, contents: String) -> String {
     let vec = convert_to_bitsum_vec(convert_to_vec(contents));
     match part {
@@ -7,14 +9,6 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
         2 => unimplemented!("not implemented yet"),
         _ => panic!("invalid part")
     }
-}
-
-fn convert_to_vec(contents: String) -> Vec<String> {
-    let mut vec = Vec::new();
-    for line in contents.lines() {
-        vec.push(line.to_string());
-    }
-    vec
 }
 
 fn convert_to_bitsum_vec(contents: Vec<String>) -> Vec<(u32, u32)> {
@@ -59,7 +53,7 @@ fn get_epsilon_rate(vec: &Vec<(u32, u32)>) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day3::{convert_to_bitsum_vec, convert_to_vec, get_epsilon_rate, get_gamma_rate, solve_puzzle};
+    use crate::day3::{convert_to_bitsum_vec, get_epsilon_rate, get_gamma_rate, solve_puzzle};
 
     #[test]
     fn test_puzzle_example_part_one() {
@@ -147,12 +141,5 @@ mod tests {
             vec![(0, 1), (0, 1), (1, 0), (1, 0), (1, 0), (0, 1), (1, 0), (0, 1), (1, 0), (0, 1), (0, 1), (1, 0)],
             convert_to_bitsum_vec(contents)
         );
-    }
-
-    #[test]
-    fn conversion_from_string_to_vec() {
-        let contents = String::from("00100\n11110\n10110\n10111\n10101\n01111\n00111\n11100\n10000\n11001\n00010\n01010");
-
-        assert_eq!(vec!["00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001", "00010", "01010"], convert_to_vec(contents));
     }
 }

@@ -4,6 +4,7 @@ use std::fs;
 mod day1;
 mod day2;
 mod day3;
+mod utils;
 
 pub struct Config {
     pub day: u8,

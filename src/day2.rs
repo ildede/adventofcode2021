@@ -1,3 +1,5 @@
+use crate::utils::convert_to_vec;
+
 pub fn solve_puzzle(part: u8, contents: String) -> String {
     let vec = convert_to_vec(contents);
     match part {
@@ -29,14 +31,6 @@ fn find_target_point(vec: Vec<String>) -> (isize, isize, isize) {
     result
 }
 
-fn convert_to_vec(contents: String) -> Vec<String> {
-    let mut vec = Vec::new();
-    for line in contents.lines() {
-        vec.push(line.to_string());
-    }
-    vec
-}
-
 fn apply_instruction_to_arrival(actual: (isize, isize), instruction: String) -> (isize, isize) {
     let split = instruction.split(" ");
     let vec: Vec<&str> = split.collect();
@@ -59,7 +53,7 @@ fn apply_instruction_to_target(actual: (isize, isize, isize), instruction: Strin
         return (actual.0 + vec[1].parse::<isize>().unwrap(), actual.1 + (vec[1].parse::<isize>().unwrap() * actual.2), actual.2);
     }
     if vec[0] == "down" {
-        return (actual.0, actual.1, actual.2  + vec[1].parse::<isize>().unwrap());
+        return (actual.0, actual.1, actual.2 + vec[1].parse::<isize>().unwrap());
     }
     if vec[0] == "up" {
         return (actual.0, actual.1, actual.2 - vec[1].parse::<isize>().unwrap());
@@ -69,7 +63,7 @@ fn apply_instruction_to_target(actual: (isize, isize, isize), instruction: Strin
 
 #[cfg(test)]
 mod tests {
-    use crate::day2::{apply_instruction_to_arrival, apply_instruction_to_target, convert_to_vec, find_arrival_point, find_target_point, solve_puzzle};
+    use crate::day2::{apply_instruction_to_arrival, apply_instruction_to_target, find_arrival_point, find_target_point, solve_puzzle};
 
     #[test]
     fn test_puzzle_example_part_one() {
@@ -155,12 +149,5 @@ mod tests {
             (0, 0, 5),
             apply_instruction_to_target((0, 0, 0), String::from("down 5"))
         );
-    }
-
-    #[test]
-    fn conversion_from_string_to_vec() {
-        let contents = String::from("forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2");
-
-        assert_eq!(vec!["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"], convert_to_vec(contents));
     }
 }

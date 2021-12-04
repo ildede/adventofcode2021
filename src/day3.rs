@@ -1,5 +1,5 @@
 pub fn solve_puzzle(part: u8, contents: String) -> String {
-    let vec = convert_to_vec(contents);
+    let vec = convert_to_bitsum_vec(convert_to_vec(contents));
     match part {
         1 => {
             (get_gamma_rate(&vec) * get_epsilon_rate(&vec)).to_string()
@@ -9,9 +9,17 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
     }
 }
 
-fn convert_to_vec(contents: String) -> Vec<(u32, u32)> {
-    let mut vec: Vec<(u32, u32)> = vec![(0, 0); contents.lines().nth(0).unwrap().len()];
+fn convert_to_vec(contents: String) -> Vec<String> {
+    let mut vec = Vec::new();
     for line in contents.lines() {
+        vec.push(line.to_string());
+    }
+    vec
+}
+
+fn convert_to_bitsum_vec(contents: Vec<String>) -> Vec<(u32, u32)> {
+    let mut vec: Vec<(u32, u32)> = vec![(0, 0); contents[0].len()];
+    for line in contents {
         for n in 0..line.len() {
             if line.chars().nth(n).unwrap() == '0' {
                 vec[n].0 = vec[n].0 + 1;
@@ -51,7 +59,7 @@ fn get_epsilon_rate(vec: &Vec<(u32, u32)>) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day3::{convert_to_vec, get_epsilon_rate, get_gamma_rate, solve_puzzle};
+    use crate::day3::{convert_to_bitsum_vec, convert_to_vec, get_epsilon_rate, get_gamma_rate, solve_puzzle};
 
     #[test]
     fn test_puzzle_example_part_one() {
@@ -126,18 +134,25 @@ mod tests {
 
     #[test]
     fn conversion_from_string_to_bitsum_vec() {
-        let contents = String::from("00100\n11110\n10110\n10111\n10101\n01111\n00111\n11100\n10000\n11001\n00010\n01010");
+        let contents = vec![String::from("00100"), String::from("11110"), String::from("10110"), String::from("10111"), String::from("10101"), String::from("01111"), String::from("00111"), String::from("11100"), String::from("10000"), String::from("11001"), String::from("00010"), String::from("01010")];
 
-        assert_eq!(vec![(5, 7), (7, 5), (4, 8), (5, 7), (7, 5)], convert_to_vec(contents));
+        assert_eq!(vec![(5, 7), (7, 5), (4, 8), (5, 7), (7, 5)], convert_to_bitsum_vec(contents));
     }
 
     #[test]
     fn conversion_from_string_to_bitsum_vec_with_arbitrary_length_of_binary_number() {
-        let contents = String::from("110001010110");
+        let contents = vec![String::from("110001010110")];
 
         assert_eq!(
             vec![(0, 1), (0, 1), (1, 0), (1, 0), (1, 0), (0, 1), (1, 0), (0, 1), (1, 0), (0, 1), (0, 1), (1, 0)],
-            convert_to_vec(contents)
+            convert_to_bitsum_vec(contents)
         );
+    }
+
+    #[test]
+    fn conversion_from_string_to_vec() {
+        let contents = String::from("00100\n11110\n10110\n10111\n10101\n01111\n00111\n11100\n10000\n11001\n00010\n01010");
+
+        assert_eq!(vec!["00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001", "00010", "01010"], convert_to_vec(contents));
     }
 }

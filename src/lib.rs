@@ -4,6 +4,7 @@ use std::fs;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 mod utils;
 
 pub struct Config {
@@ -50,6 +51,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
         1 => day1::solve_puzzle(config.part, contents),
         2 => day2::solve_puzzle(config.part, contents),
         3 => day3::solve_puzzle(config.part, contents),
+        4 => day4::solve_puzzle(config.part, contents),
         _ => panic!("invalid day")
     };
     println!("Result: {}", result);

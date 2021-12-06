@@ -4,7 +4,7 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
     let rows_of_content = convert_to_vec(contents);
     match part {
         1 => {
-            let drawn_numbers = to_drawn_numbers(&rows_of_content[0]);
+            let full_game = to_full_game(&rows_of_content);
             String::from("")
         },
         2 => unimplemented!("not implemented yet"),
@@ -16,8 +16,6 @@ fn to_drawn_numbers(list: &String) -> Vec<u8> {
     let split = list.split(',')
         .map(|c| c.parse::<u8>().unwrap())
         .collect();
-
-    println!("{:?}", split);
     split
 }
 
@@ -33,9 +31,69 @@ fn to_bingo_board(input_board: Vec<String>) -> Vec<Vec<u8>> {
     board
 }
 
+fn to_bingo_boards(rows: &Vec<String>) -> Vec<Vec<Vec<u8>>> {
+    let mut boards: Vec<Vec<Vec<u8>>> = Vec::new();
+    let mut row_count: u8 = 0;
+    let mut tmp: Vec<String> = Vec::new();
+    for r in 2..rows.len() {
+        if row_count < 5 {
+            tmp.push(rows[r].clone());
+            row_count = row_count + 1;
+        } else if row_count == 5 {
+            boards.push(to_bingo_board(tmp.clone()));
+            row_count = 0;
+            tmp = Vec::new();
+        }
+    }
+    boards
+}
+
+fn to_full_game(rows: &Vec<String>) -> (Vec<u8>, Vec<Vec<Vec<u8>>>){
+    (
+        to_drawn_numbers(&rows[0]),
+        to_bingo_boards(rows)
+    )
+}
+
+fn round_to_win(input_board: Vec<Vec<u8>>, numbers: Vec<u8>) -> Option<usize> {
+    let mut extracted_numbers: Vec<u8> = Vec::new();
+    let mut horizontal_round_to_win: Option<usize> = None;
+    for n in &numbers {
+        extracted_numbers.push(n.clone());
+        if input_board.iter().any(|hl| hl.iter().all(|e| extracted_numbers.contains(e))) {
+            horizontal_round_to_win = Some(extracted_numbers.len());
+            break;
+        }
+    }
+    extracted_numbers = Vec::new();
+    let mut vertical_round_to_win: Option<usize> = None;
+    for n in &numbers {
+        extracted_numbers.push(n.clone());
+        if input_board.iter().all(|hl| extracted_numbers.contains(&hl[0])) {
+            vertical_round_to_win = Some(extracted_numbers.len());
+            break;
+        }
+    }
+    if horizontal_round_to_win.is_some() && vertical_round_to_win.is_some() {
+        let horizontal = horizontal_round_to_win.unwrap();
+        let vertical = vertical_round_to_win.unwrap();
+        if horizontal <= vertical {
+            Some(horizontal)
+        } else {
+            Some(vertical)
+        }
+    } else if horizontal_round_to_win.is_some() {
+        horizontal_round_to_win
+    } else if vertical_round_to_win.is_some() {
+        vertical_round_to_win
+    } else {
+        None
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::day4::{solve_puzzle, to_bingo_board, to_drawn_numbers};
+    use crate::day4::{round_to_win, solve_puzzle, to_bingo_board, to_drawn_numbers};
 
     #[test]
     fn test_puzzle_example_part_one() {
@@ -92,6 +150,48 @@ mod tests {
         assert_eq!(
             expected,
             to_bingo_board(contents)
-        )
+        );
+    }
+
+    #[test]
+    fn round_to_win_on_horizontal_line() {
+        let input_board: Vec<Vec<u8>> = vec![
+            vec![14, 21, 17, 24, 4],
+            vec![10, 16, 15, 9, 19],
+            vec![18, 8, 23, 26, 20],
+            vec![22, 11, 13, 6, 5],
+            vec![2, 0, 12, 3, 7]
+        ];
+        let numbers = vec![7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1];
+
+        assert_eq!(Some(12), round_to_win(input_board, numbers));
+    }
+
+    #[test]
+    fn round_to_win_on_vertical_line() {
+        let input_board: Vec<Vec<u8>> = vec![
+            vec![14, 21, 17, 24, 4],
+            vec![10, 16, 15, 9, 19],
+            vec![18, 8, 23, 26, 20],
+            vec![22, 11, 13, 6, 5],
+            vec![2, 0, 12, 3, 7]
+        ];
+        let numbers = vec![14, 10, 18, 22, 2, 3, 4, 5, 6, 7, 8, 9];
+
+        assert_eq!(Some(5), round_to_win(input_board, numbers));
+    }
+
+    #[test]
+    fn return_min_round_to_win_with_both_vertical_and_horizontal_winning() {
+        let input_board: Vec<Vec<u8>> = vec![
+            vec![14, 3, 4, 5, 6],
+            vec![10, 16, 15, 9, 19],
+            vec![18, 8, 23, 26, 20],
+            vec![22, 11, 13, 6, 5],
+            vec![2, 0, 12, 3, 7]
+        ];
+        let numbers = vec![14, 10, 18, 22, 2, 3, 4, 5, 6, 7, 8, 9];
+
+        assert_eq!(Some(5), round_to_win(input_board, numbers));
     }
 }

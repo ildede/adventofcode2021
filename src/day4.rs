@@ -4,12 +4,32 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
     let rows_of_content = convert_to_vec(contents);
     match part {
         1 => {
-            let full_game = to_full_game(&rows_of_content);
+            let (numbers, boards) = to_full_game(&rows_of_content);
+            let winning_board = get_first_winning_board(numbers, boards);
+            println!("{:?}", winning_board);
             String::from("")
         },
         2 => unimplemented!("not implemented yet"),
         _ => panic!("invalid part")
     }
+}
+
+fn get_first_winning_board(numbers: Vec<u8>, boards: Vec<Vec<Vec<u8>>>) -> Vec<Vec<u8>> {
+    let mut min_rounds = 9999999;
+    let mut best_board: Vec<Vec<u8>> = Vec::new();
+    for board in boards {
+        let round = round_to_win(board.clone(), numbers.clone());
+        match round {
+            Some(c) => {
+                if c < min_rounds {
+                    min_rounds = c;
+                    best_board = board;
+                }
+            },
+            None => ()
+        }
+    }
+    best_board
 }
 
 fn to_drawn_numbers(list: &String) -> Vec<u8> {
@@ -36,11 +56,14 @@ fn to_bingo_boards(rows: &Vec<String>) -> Vec<Vec<Vec<u8>>> {
     let mut row_count: u8 = 0;
     let mut tmp: Vec<String> = Vec::new();
     for r in 2..rows.len() {
-        if row_count < 5 {
+        if row_count < 4 {
             tmp.push(rows[r].clone());
             row_count = row_count + 1;
-        } else if row_count == 5 {
+        } else if row_count == 4 {
+            tmp.push(rows[r].clone());
+            row_count = row_count + 1;
             boards.push(to_bingo_board(tmp.clone()));
+        } else if row_count == 5 {
             row_count = 0;
             tmp = Vec::new();
         }
@@ -48,7 +71,7 @@ fn to_bingo_boards(rows: &Vec<String>) -> Vec<Vec<Vec<u8>>> {
     boards
 }
 
-fn to_full_game(rows: &Vec<String>) -> (Vec<u8>, Vec<Vec<Vec<u8>>>){
+fn to_full_game(rows: &Vec<String>) -> (Vec<u8>, Vec<Vec<Vec<u8>>>) {
     (
         to_drawn_numbers(&rows[0]),
         to_bingo_boards(rows)
@@ -93,7 +116,7 @@ fn round_to_win(input_board: Vec<Vec<u8>>, numbers: Vec<u8>) -> Option<usize> {
 
 #[cfg(test)]
 mod tests {
-    use crate::day4::{round_to_win, solve_puzzle, to_bingo_board, to_drawn_numbers};
+    use crate::day4::{get_first_winning_board, round_to_win, solve_puzzle, to_bingo_board, to_drawn_numbers};
 
     #[test]
     fn test_puzzle_example_part_one() {
@@ -193,5 +216,33 @@ mod tests {
         let numbers = vec![14, 10, 18, 22, 2, 3, 4, 5, 6, 7, 8, 9];
 
         assert_eq!(Some(5), round_to_win(input_board, numbers));
+    }
+
+    #[test]
+    fn get_firs_winning_board_from_example() {
+        let numbers = vec![7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1];
+        let board_0: Vec<Vec<u8>> = vec![
+            vec![22, 13, 17, 11, 0],
+            vec![8, 2, 23, 4, 24],
+            vec![21, 9, 14, 16, 7],
+            vec![6, 10, 3, 18, 5],
+            vec![1, 12, 20, 15, 19]
+        ];
+        let board_1: Vec<Vec<u8>> = vec![
+            vec![3, 15, 0, 2, 22],
+            vec![9, 18, 13, 17, 5],
+            vec![19, 8, 7, 25, 23],
+            vec![20, 11, 10, 24, 4],
+            vec![14, 21, 16, 12, 6],
+        ];
+        let board_2: Vec<Vec<u8>> = vec![
+            vec![14, 21, 17, 24, 4],
+            vec![10, 16, 15, 9, 19],
+            vec![18, 8, 23, 26, 20],
+            vec![22, 11, 13, 6, 5],
+            vec![2, 0, 12, 3, 7]
+        ];
+
+        assert_eq!(board_2, get_first_winning_board(numbers, vec![board_0.clone(), board_1.clone(), board_2.clone()]));
     }
 }

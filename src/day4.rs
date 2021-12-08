@@ -5,13 +5,36 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
     match part {
         1 => {
             let (numbers, boards) = to_full_game(&rows_of_content);
-            let (winning_number, winning_board) = get_first_winning_board(numbers, boards);
-            println!("{:?}", winning_board);
-            String::from("")
+            let (winning_number, winning_board) = get_first_winning_board(numbers.clone(), boards);
+            get_score_of_board(winning_number, winning_board, numbers).to_string()
         },
         2 => unimplemented!("not implemented yet"),
         _ => panic!("invalid part")
     }
+}
+
+fn get_score_of_board(winning_number: u8, winning_board: Vec<Vec<u8>>, numbers: Vec<u8>) -> usize {
+    let mut result: usize = 0;
+    let mut extracted_numbers = Vec::new();
+    for number in numbers {
+        if number != winning_number {
+            extracted_numbers.push(number);
+        } else {
+            extracted_numbers.push(number);
+            break;
+        }
+    }
+    for row in winning_board {
+        for x in row {
+            if extracted_numbers.contains(&x) {
+                ();
+            } else {
+                result = result + (x as usize);
+            }
+        }
+    }
+    result = result * (winning_number as usize);
+    result
 }
 
 fn get_first_winning_board(numbers: Vec<u8>, boards: Vec<Vec<Vec<u8>>>) -> (u8, Vec<Vec<u8>>) {
@@ -116,7 +139,7 @@ fn round_to_win(input_board: Vec<Vec<u8>>, numbers: Vec<u8>) -> Option<usize> {
 
 #[cfg(test)]
 mod tests {
-    use crate::day4::{get_first_winning_board, round_to_win, solve_puzzle, to_bingo_board, to_drawn_numbers};
+    use crate::day4::{get_first_winning_board, get_score_of_board, round_to_win, solve_puzzle, to_bingo_board, to_drawn_numbers};
 
     #[test]
     fn test_puzzle_example_part_one() {
@@ -244,5 +267,19 @@ mod tests {
         ];
 
         assert_eq!((24, board_2.clone()), get_first_winning_board(numbers, vec![board_0.clone(), board_1.clone(), board_2.clone()]));
+    }
+
+    #[test]
+    fn calculate_winning_score() {
+        let numbers = vec![7, 4, 9, 5, 11, 17, 23, 2, 0, 14, 21, 24, 10, 16, 13, 6, 15, 25, 12, 22, 18, 20, 8, 19, 3, 26, 1];
+        let board: Vec<Vec<u8>> = vec![
+            vec![14, 21, 17, 24, 4],
+            vec![10, 16, 15, 9, 19],
+            vec![18, 8, 23, 26, 20],
+            vec![22, 11, 13, 6, 5],
+            vec![2, 0, 12, 3, 7]
+        ];
+
+        assert_eq!(4512, get_score_of_board(24, board, numbers));
     }
 }

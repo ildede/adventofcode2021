@@ -5,10 +5,14 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
     match part {
         1 => {
             let (numbers, boards) = to_full_game(&rows_of_content);
-            let (winning_number, winning_board) = get_first_winning_board(numbers.clone(), boards);
+            let (winning_number, winning_board) = get_first_winning_board(numbers.clone(), boards.clone());
             get_score_of_board(winning_number, winning_board, numbers).to_string()
         },
-        2 => unimplemented!("not implemented yet"),
+        2 => {
+            let (numbers, boards) = to_full_game(&rows_of_content);
+            let (winning_number, winning_board) = get_last_winning_board(numbers.clone(), boards);
+            get_score_of_board(winning_number, winning_board, numbers).to_string()
+        },
         _ => panic!("invalid part")
     }
 }
@@ -53,6 +57,24 @@ fn get_first_winning_board(numbers: Vec<u8>, boards: Vec<Vec<Vec<u8>>>) -> (u8, 
         }
     }
     (numbers[min_rounds-1], best_board)
+}
+
+fn get_last_winning_board(numbers: Vec<u8>, boards: Vec<Vec<Vec<u8>>>) -> (u8, Vec<Vec<u8>>) {
+    let mut min_rounds = 0;
+    let mut worst_board: Vec<Vec<u8>> = Vec::new();
+    for board in boards {
+        let round = round_to_win(board.clone(), numbers.clone());
+        match round {
+            Some(c) => {
+                if c > min_rounds {
+                    min_rounds = c;
+                    worst_board = board;
+                }
+            },
+            None => ()
+        }
+    }
+    (numbers[min_rounds-1], worst_board)
 }
 
 fn to_drawn_numbers(list: &String) -> Vec<u8> {

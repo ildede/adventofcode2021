@@ -113,11 +113,13 @@ fn round_to_win(input_board: Vec<Vec<u8>>, numbers: Vec<u8>) -> Option<usize> {
     }
     extracted_numbers = Vec::new();
     let mut vertical_round_to_win: Option<usize> = None;
-    for n in &numbers {
+    'outer_loop: for n in &numbers {
         extracted_numbers.push(n.clone());
-        if input_board.iter().all(|hl| extracted_numbers.contains(&hl[0])) {
-            vertical_round_to_win = Some(extracted_numbers.len());
-            break;
+        for i in 0..5 {
+            if input_board.iter().all(|hl| extracted_numbers.contains(&hl[i])) {
+                vertical_round_to_win = Some(extracted_numbers.len());
+                break 'outer_loop;
+            }
         }
     }
     if horizontal_round_to_win.is_some() && vertical_round_to_win.is_some() {
@@ -239,6 +241,20 @@ mod tests {
         let numbers = vec![14, 10, 18, 22, 2, 3, 4, 5, 6, 7, 8, 9];
 
         assert_eq!(Some(5), round_to_win(input_board, numbers));
+    }
+
+    #[test]
+    fn round_to_win_on_last_vertical_line() {
+        let input_board: Vec<Vec<u8>> = vec![
+            vec![78, 80, 98, 62, 87],
+            vec![90, 53, 91, 81, 23],
+            vec![46, 15, 4, 63, 74],
+            vec![30, 6, 47, 64, 44],
+            vec![12, 45, 95, 68, 99]
+        ];
+        let numbers = vec![87,7,82,21,47,88,12,71,24,35,10,90,4,97,30,55,36,74,19,50,23,46,13,44,69,27,2,0,37,33,99,49,77,15,89,98,31,51,22,96,73,94,95,18,52,78,32,83,85,54,75,84,59,25,76,45,20,48,9,28,39,70,63,56,5,68,61,26,58,92,67,53,43,62,17,81,80,66,91,93,41,64,14,8,57,38,34,16,42,11,86,72,40,65,79,6,3,29,60,1];
+
+        assert_eq!(Some(31), round_to_win(input_board, numbers));
     }
 
     #[test]

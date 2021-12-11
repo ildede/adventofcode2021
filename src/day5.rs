@@ -1,3 +1,4 @@
+use std::cmp::{max, min};
 use crate::utils::convert_to_vec;
 
 pub fn solve_puzzle(part: u8, contents: String) -> String {
@@ -14,7 +15,16 @@ pub fn solve_puzzle(part: u8, contents: String) -> String {
 
             String::from(grid.count_overlapping_points().to_string())
         }
-        2 => unimplemented!("not implemented yet"),
+        2 => {
+            let valid_instructions: Vec<Instruction> = rows_of_content.iter()
+                .map(|e| Instruction::from(e))
+                .collect();
+
+            let mut grid = create_empty_grid(find_grid_size(&valid_instructions));
+            grid.draw_lines(valid_instructions);
+
+            String::from(grid.count_overlapping_points().to_string())
+        }
         _ => panic!("invalid part")
     }
 }
@@ -92,6 +102,27 @@ impl Grid {
                         }
                     }
                 }
+            } else {
+                let mut start_point_x = instruction.start.0 as usize;
+                let mut start_point_y = instruction.start.1 as usize;
+                let end_point_x = instruction.end.0 as usize;
+                let end_point_y = instruction.end.1 as usize;
+
+                let steps = max(start_point_x, end_point_x) - min(start_point_x, end_point_x);
+                for i in 0..=steps {
+                    self.grid[start_point_y][start_point_x] = self.grid[start_point_y][start_point_x] + 1;
+                    if start_point_x > end_point_x {
+                        start_point_x = start_point_x - 1;
+                    } else {
+                        start_point_x = start_point_x + 1;
+                    }
+                    if start_point_y > end_point_y {
+                        start_point_y = start_point_y - 1;
+                    } else {
+                        start_point_y = start_point_y + 1;
+                    }
+                }
+
             }
         }
     }
@@ -166,6 +197,24 @@ mod tests {
     }
 
     #[test]
+    fn test_puzzle_example_part_two() {
+        let contents = String::from("\
+0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2
+");
+
+        assert_eq!("12", solve_puzzle(2, contents));
+    }
+
+    #[test]
     fn create_instruction() {
         let input = "0,9 -> 5,9";
 
@@ -201,7 +250,7 @@ mod tests {
     }
 
     #[test]
-    fn apply_single_instructions_from_example() {
+    fn apply_horizontal_instructions_from_example() {
         let instructions = vec![
             Instruction { start: (0, 9), end: (5, 9) },
             Instruction { start: (9, 4), end: (3, 4) },
@@ -222,6 +271,41 @@ mod tests {
                 vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                vec![2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
+            ]
+        };
+
+        initial_grid.draw_lines(instructions);
+        initial_grid.print();
+        assert_eq!(expected, initial_grid)
+    }
+
+    #[test]
+    fn apply_all_instructions_from_example() {
+        let instructions = vec![
+            Instruction { start: (0, 9), end: (5, 9) },
+            Instruction { start: (8, 0), end: (0, 8) },
+            Instruction { start: (9, 4), end: (3, 4) },
+            Instruction { start: (2, 2), end: (2, 1) },
+            Instruction { start: (7, 0), end: (7, 4) },
+            Instruction { start: (6, 4), end: (2, 0) },
+            Instruction { start: (0, 9), end: (2, 9) },
+            Instruction { start: (3, 4), end: (1, 4) },
+            Instruction { start: (0, 0), end: (8, 8) },
+            Instruction { start: (5, 5), end: (8, 2) },
+        ];
+        let mut initial_grid = create_empty_grid((10, 10));
+        let expected = Grid {
+            grid: vec![
+                vec![1, 0, 1, 0, 0, 0, 0, 1, 1, 0],
+                vec![0, 1, 1, 1, 0, 0, 0, 2, 0, 0],
+                vec![0, 0, 2, 0, 1, 0, 1, 1, 1, 0],
+                vec![0, 0, 0, 1, 0, 2, 0, 2, 0, 0],
+                vec![0, 1, 1, 2, 3, 1, 3, 2, 1, 1],
+                vec![0, 0, 0, 1, 0, 2, 0, 0, 0, 0],
+                vec![0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                vec![0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+                vec![1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                 vec![2, 2, 2, 1, 1, 1, 0, 0, 0, 0],
             ]
         };

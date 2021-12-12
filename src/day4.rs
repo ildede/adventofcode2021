@@ -1,4 +1,4 @@
-use crate::utils::convert_to_vec;
+use crate::utils::{convert_to_vec, split_to_numbers};
 
 pub fn solve_puzzle(part: u8, contents: String) -> String {
     let rows_of_content = convert_to_vec(contents);
@@ -77,13 +77,6 @@ fn get_last_winning_board(numbers: Vec<u8>, boards: Vec<Vec<Vec<u8>>>) -> (u8, V
     (numbers[min_rounds-1], worst_board)
 }
 
-fn to_drawn_numbers(list: &String) -> Vec<u8> {
-    let split = list.split(',')
-        .map(|c| c.parse::<u8>().unwrap())
-        .collect();
-    split
-}
-
 fn to_bingo_board(input_board: Vec<String>) -> Vec<Vec<u8>> {
     let mut board: Vec<Vec<u8>> = Vec::new();
     for n in 0..5 {
@@ -118,7 +111,7 @@ fn to_bingo_boards(rows: &Vec<String>) -> Vec<Vec<Vec<u8>>> {
 
 fn to_full_game(rows: &Vec<String>) -> (Vec<u8>, Vec<Vec<Vec<u8>>>) {
     (
-        to_drawn_numbers(&rows[0]),
+        split_to_numbers(rows[0].clone()),
         to_bingo_boards(rows)
     )
 }
@@ -163,7 +156,7 @@ fn round_to_win(input_board: Vec<Vec<u8>>, numbers: Vec<u8>) -> Option<usize> {
 
 #[cfg(test)]
 mod tests {
-    use crate::day4::{get_first_winning_board, get_score_of_board, round_to_win, solve_puzzle, to_bingo_board, to_drawn_numbers};
+    use crate::day4::{get_first_winning_board, get_score_of_board, round_to_win, solve_puzzle, to_bingo_board};
 
     #[test]
     fn test_puzzle_example_part_one() {
@@ -189,16 +182,6 @@ mod tests {
  2  0 12  3  7");
 
         assert_eq!("4512", solve_puzzle(1, contents));
-    }
-
-    #[test]
-    fn converts_to_list_of_drawn_numbers() {
-        let contents = String::from("7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1");
-
-        assert_eq!(
-            vec![7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1],
-            to_drawn_numbers(&contents)
-        )
     }
 
     #[test]

@@ -12,6 +12,12 @@ pub fn split_to_numbers(list: String) -> Vec<u8> {
         .collect()
 }
 
+pub fn split_to_usize(list: String) -> Vec<usize> {
+    list.split(',')
+        .map(|c| c.parse::<usize>().unwrap())
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use crate::utils::{convert_to_vec, split_to_numbers};
